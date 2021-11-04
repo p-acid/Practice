@@ -8,14 +8,13 @@ const SearchList = ({
   isSelected,
   handleCurrentTag,
 }) => {
+  const filtered = list.filter(
+    item => item.tagName.includes(searchInput) && isSelected(item.id, false)
+  );
   return (
     <Wrapper>
-      {list
-        .filter(
-          item =>
-            item.tagName.includes(searchInput) && isSelected(item.id, false)
-        )
-        .map(item => (
+      {filtered.length > 0 ? (
+        filtered.map(item => (
           <Item
             key={item.id}
             onClick={() => {
@@ -25,7 +24,10 @@ const SearchList = ({
           >
             {item.tagName}
           </Item>
-        ))}
+        ))
+      ) : (
+        <span>none</span>
+      )}
     </Wrapper>
   );
 };
