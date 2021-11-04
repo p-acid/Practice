@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import TagList from "./component/TagList";
+import SearchList from "./component/SearchList";
 
 const ProgressBar = () => {
+  const [searchInput, setSearchInput] = useState("");
   const [currentTag, setCurrentTag] = useState([]);
 
   const len = currentTag.length;
@@ -18,41 +21,54 @@ const ProgressBar = () => {
     }
   };
 
+  const handleSearchInput = ({ target }) => {
+    const { value } = target;
+    setSearchInput(value);
+  };
+
+  const isSelected = (id, bool = true) => {
+    return bool ? currentTag.includes(id) : !currentTag.includes(id);
+  };
+
   const percent = len * 20;
 
   return (
     <Wrapper>
       <Title>Keyword Selector</Title>
+      <SearchBox>
+        <SearchBar
+          value={searchInput}
+          onChange={handleSearchInput}
+          placeholder="검색어를 입력하세요"
+        />
+        {searchInput && (
+          <SearchList
+            list={EXAMPLE}
+            searchInput={searchInput}
+            setSearchInput={setSearchInput}
+            isSelected={isSelected}
+            handleCurrentTag={handleCurrentTag}
+          />
+        )}
+      </SearchBox>
       <SubTitle>Selected Keyword</SubTitle>
       {len > 0 ? (
-        <TagBox>
-          {EXAMPLE.map(item => {
-            const { id, tagName } = item;
-            return (
-              currentTag.includes(id) && (
-                <Tag key={id} onClick={() => handleCurrentTag(id)}>
-                  {tagName}
-                </Tag>
-              )
-            );
-          })}
-        </TagBox>
+        <TagList
+          list={EXAMPLE}
+          isSelected={isSelected}
+          bool={true}
+          handleCurrentTag={handleCurrentTag}
+        />
       ) : (
         <None>None</None>
       )}
       <SubTitle>Keyword List</SubTitle>
-      <TagBox>
-        {EXAMPLE.map(item => {
-          const { id, tagName } = item;
-          return (
-            !currentTag.includes(id) && (
-              <Tag key={id} onClick={() => handleCurrentTag(id)}>
-                {tagName}
-              </Tag>
-            )
-          );
-        })}
-      </TagBox>
+      <TagList
+        list={EXAMPLE}
+        isSelected={isSelected}
+        bool={false}
+        handleCurrentTag={handleCurrentTag}
+      />
       <BarWrapper>
         <Bar percent={percent}>{percent}%</Bar>
       </BarWrapper>
@@ -81,6 +97,19 @@ const SubTitle = styled.h2`
   font-size: 12px;
 `;
 
+const SearchBox = styled.div`
+  position: relative;
+`;
+
+const SearchBar = styled.input`
+  padding: 10px;
+  width: 400px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+`;
+
 const None = styled.div`
   padding: 10px;
   width: 400px;
@@ -89,26 +118,6 @@ const None = styled.div`
   text-align: center;
   font-size: 14px;
   color: gray;
-`;
-
-const TagBox = styled.section`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 5px;
-  margin-bottom: 10px;
-  padding: 10px;
-  width: 400px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
-`;
-
-const Tag = styled.div`
-  padding: 6px;
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  background-color: ${({ activate }) => activate && "orange"};
-  cursor: pointer;
-  transition: 1s;
 `;
 
 const BarWrapper = styled.div`
