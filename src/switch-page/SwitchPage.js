@@ -1,39 +1,36 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
+import styled, { keyframes } from "styled-components";
+import FirstPage from "./component/FirstPage";
+import SecondPage from "./component/SecondPage";
+import ThirdPage from "./component/ThirdPage";
 
 const SwitchPage = () => {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const page = LIST[currentPage];
-  const { name } = page;
+  useEffect(() => {}, [currentPage]);
+
   return (
     <Wrapper>
-      <BtnBox>
-        {Object.values(LIST).map(item => {
-          const { id, name } = item;
-          return (
-            <SwitchBtn key={id} onClick={() => setCurrentPage(id)}>
-              {name}
-            </SwitchBtn>
-          );
-        })}
-      </BtnBox>
       <ListBox>
-        <Text>{name}</Text>
-        <SkipBtn
-          onClick={() =>
-            setCurrentPage(prev => {
-              if (prev >= 2) {
-                alert("Done!");
-                return 0;
-              }
-              return Number(prev) + 1;
-            })
-          }
+        {LIST.map(
+          item =>
+            item.id === currentPage && (
+              <PageWrapper key={item.id}>{item.page}</PageWrapper>
+            )
+        )}
+      </ListBox>
+      <BtnBox>
+        <Button
+          onClick={() => setCurrentPage(prev => (prev < 2 ? 3 : prev - 1))}
+        >
+          Back
+        </Button>
+        <Button
+          onClick={() => setCurrentPage(prev => (prev > 2 ? 1 : prev + 1))}
         >
           Skip
-        </SkipBtn>
-      </ListBox>
+        </Button>
+      </BtnBox>
     </Wrapper>
   );
 };
@@ -46,28 +43,10 @@ const Wrapper = styled.section`
   width: 600px;
 `;
 
-const BtnBox = styled.ul`
-  display: flex;
-  gap: 5px;
-  padding: 0;
-  list-style: none;
-`;
-
-const SwitchBtn = styled.li`
-  flex: 1;
-  padding: 10px 0;
-  text-align: center;
-  border-radius: 10px;
-  background-color: lightgray;
-  cursor: pointer;
-
-  &:hover {
-    background-color: gray;
-  }
-`;
-
 const ListBox = styled.div`
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin: 10px 0;
   padding: 10px;
   height: 400px;
@@ -75,32 +54,36 @@ const ListBox = styled.div`
   border-radius: 10px;
 `;
 
-const Text = styled.div`
-  height: 100px;
-  border-radius: 10px;
-  text-align: center;
-  background-color: white;
+const BoxMount = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateX(-5%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 `;
 
-const SkipBtn = styled.div`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  color: gray;
+const PageWrapper = styled.div`
+  animation: ${BoxMount} 250ms;
+`;
+
+const BtnBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Button = styled.div`
+  width: 100px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: gray;
   cursor: pointer;
 `;
 
-const LIST = {
-  0: {
-    id: "0",
-    name: "keyword select",
-  },
-  1: {
-    id: "1",
-    name: "country, time zone",
-  },
-  2: {
-    id: "2",
-    name: "data integration",
-  },
-};
+const LIST = [
+  { id: 1, page: <FirstPage /> },
+  { id: 2, page: <SecondPage /> },
+  { id: 3, page: <ThirdPage /> },
+];
